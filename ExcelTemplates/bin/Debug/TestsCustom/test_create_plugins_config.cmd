@@ -1,0 +1,1 @@
+..\ExcelTemplates.exe /create_plugins_config

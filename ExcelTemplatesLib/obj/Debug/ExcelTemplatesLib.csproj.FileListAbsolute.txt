@@ -1,0 +1,11 @@
+C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\bin\Debug\ExcelTemplatesLib.dll
+C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\bin\Debug\ExcelTemplatesLib.pdb
+C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\bin\Debug\PluginsMain.dll
+C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\bin\Debug\PluginsMain.pdb
+C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\obj\Debug\ExcelTemplatesLib.csproj.AssemblyReference.cache
+C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\obj\Debug\ExcelTemplatesLib.csproj.CoreCompileInputs.cache
+C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\obj\Debug\ExcelTemplatesLib.csproj.CopyComplete
+C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\obj\Debug\ExcelTemplatesLib.dll
+C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\obj\Debug\ExcelTemplatesLib.pdb
+C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\bin\Debug\SX.dll
+C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\bin\Debug\ThoughtWorks.QRCode.dll

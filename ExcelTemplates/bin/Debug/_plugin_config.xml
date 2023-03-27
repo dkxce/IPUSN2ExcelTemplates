@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PluginInfo>
+  <PluginType>export_documents</PluginType>
+  <PluginName>Вывод документов на основе расширенных шаблонов Excel</PluginName>
+  <SupportedDocuments>счет,акт</SupportedDocuments>
+  <PluginShortName>Вывод Excel Templates</PluginShortName>
+  <Executable>ExcelTemplates.exe</Executable>
+  <Library>ExcelTemplatesLib.dll</Library>
+</PluginInfo>

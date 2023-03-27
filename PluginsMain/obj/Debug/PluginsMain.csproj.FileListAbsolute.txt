@@ -1,0 +1,6 @@
+C:\Users\dkxce\source\repos\ExcelTemplates\PluginsMain\obj\Debug\PluginsMain.csproj.AssemblyReference.cache
+C:\Users\dkxce\source\repos\ExcelTemplates\PluginsMain\obj\Debug\PluginsMain.csproj.CoreCompileInputs.cache
+C:\Users\dkxce\source\repos\ExcelTemplates\PluginsMain\bin\Debug\PluginsMain.dll
+C:\Users\dkxce\source\repos\ExcelTemplates\PluginsMain\bin\Debug\PluginsMain.pdb
+C:\Users\dkxce\source\repos\ExcelTemplates\PluginsMain\obj\Debug\PluginsMain.dll
+C:\Users\dkxce\source\repos\ExcelTemplates\PluginsMain\obj\Debug\PluginsMain.pdb
