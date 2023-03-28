@@ -12,6 +12,7 @@ using PluginsMain;
 using System.Xml;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Security;
 
 namespace ExcelTemplatesLib
 {
@@ -215,9 +216,15 @@ namespace ExcelTemplatesLib
         {
             bool add = string.IsNullOrEmpty(doc.GetDocField("PARTNER_INN")) && string.IsNullOrEmpty(doc.GetDocField("PARTNER_KPP"));
             string suffix = doc.DocType == "счет" && add ? "_QR" : "";
-            string tmpName = $"_template_{doc.DocType}{suffix}.xlsx";
-            string tmpPath = Path.Combine(Path.Combine(CurrDir, "Templates"), tmpName);
-            
+
+            string tmpName = null;
+            string tmpPath = null;
+            foreach (string prefix in new string[] { doc.GetDocField("MYINN") /* Individual Design */, "template" /* Iniversal Design */ })
+            {
+                tmpName = $"_{prefix}_{doc.DocType}{suffix}.xlsx";
+                tmpPath = Path.Combine(Path.Combine(CurrDir, "Templates"), tmpName);
+                if (File.Exists(tmpPath)) break;
+            };
             if(!File.Exists(tmpPath))
             {
                 MessageBox.Show($"Файл шаблона {tmpName} не найден", PluginName, MessageBoxButtons.OK, MessageBoxIcon.Error);

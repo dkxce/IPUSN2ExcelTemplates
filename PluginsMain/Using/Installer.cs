@@ -43,7 +43,26 @@ namespace PluginsMain
             RewriteTemplates(path);
             CopyFiles(path);
             Console.WriteLine($"Установка успешно завершена");
-            MessageBox.Show("Установка успешно завершена", "Установка плагина для ИП УСН2", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if(MessageBox.Show("Установка успешно завершена\r\n\r\nОткрыть файлы шаблонов для редактирования?", "Установка плагина для ИП УСН2", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                ProxyExcel(
+                    Path.Combine(path, @"Plugins\ExcelTemplate\Templates\_template_акт.xlsx"),
+                    Path.Combine(path, @"Plugins\ExcelTemplate\Templates\_template_счет.xlsx"),
+                    Path.Combine(path, @"Plugins\ExcelTemplate\Templates\_template_счет_QR.xlsx")
+                    );
+        }
+
+        private static void ProxyExcel(params string[] filePath)
+        {
+            const string toRun = "excel";
+            try
+            {
+                string args = "";
+                foreach (string f in filePath) args += (args.Length > 0 ? " " : "") + $"\"{f}\"";
+                ProcessStartInfo psi = new ProcessStartInfo(toRun, args);
+                psi.UseShellExecute = true;
+                Process.Start(psi);
+            }
+            catch { };
         }
 
         private static string GetAppPath()
@@ -113,7 +132,7 @@ namespace PluginsMain
             foreach(string f in files)
             {
                 string fs = f.Substring(subs.Length).Trim('\\');
-                string fd = Path.Combine(p, fs);
+                string fd = Path.Combine(p, fs);                
                 File.Copy(f, fd, true);
                 Console.WriteLine($" Файл шаблона {fs} успешно скопирован");
             };
@@ -130,6 +149,10 @@ namespace PluginsMain
                 string fs = f.Substring(subs.Length).Trim('\\');
                 string fd = Path.Combine(p, fs);
                 Directory.CreateDirectory(Path.GetDirectoryName(fd));
+                string sfs = Path.GetFileName(fs);
+                if (Path.GetExtension(sfs).ToLower() == ".xlsx" && File.Exists(fd))
+                    if (MessageBox.Show($"Переписать существующий шаблон `{sfs}`?", "Установка плагина", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                        continue;
                 File.Copy(f, fd, true);
                 Console.WriteLine($" Файл {fs} успешно скопирован");
             };
