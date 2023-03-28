@@ -25,7 +25,5 @@
 
 **Примеры**:
 - [Примеры](Examples)         
-- ![Счет, PDF](Examples/bill_example.pdf)   
-- ![Акт, PDF](Examples/act_example.pdf)   
 ![bill_example](Examples/bill_example.png)    
 ![act_example](Examples/act_example.png)    

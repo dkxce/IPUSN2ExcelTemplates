@@ -212,8 +212,10 @@ namespace ExcelTemplatesLib
         }
 
         private void ProcessDocument(ExportedDocument doc, string sourcePath = null)
-        {            
-            string tmpName = $"_template_{doc.DocType}.xlsx";
+        {
+            bool add = string.IsNullOrEmpty(doc.GetDocField("PARTNER_INN")) && string.IsNullOrEmpty(doc.GetDocField("PARTNER_KPP"));
+            string suffix = doc.DocType == "счет" && add ? "_QR" : "";
+            string tmpName = $"_template_{doc.DocType}{suffix}.xlsx";
             string tmpPath = Path.Combine(Path.Combine(CurrDir, "Templates"), tmpName);
             
             if(!File.Exists(tmpPath))
