@@ -122,11 +122,12 @@ namespace PluginsMain
                 };
             if (save)
             {
+                try { File.Copy(filePath, $"{filePath}.backup", true); } catch { };
                 using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 {
                     StreamWriter sw = new StreamWriter(fs, Encoding.GetEncoding(1251));
-                    foreach (string l in lines)
-                        sw.WriteLine(l);
+                    foreach (string l in lines) sw.WriteLine(l);
+                    sw.Flush();
                 };
             };
             Console.WriteLine(" Файл конфигурации успешно пропатчен");
