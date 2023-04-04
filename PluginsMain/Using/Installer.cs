@@ -122,7 +122,12 @@ namespace PluginsMain
                 };
             if (save)
             {
-                try { File.Copy(filePath, $"{filePath}.backup", true); } catch { };
+                string dt = DateTime.Now.ToString("yyyyMMddHHmm");
+                string fdb = Path.Combine(Path.GetDirectoryName(filePath), $"Plugins\\ExcelTemplate\\Backups\\{dt}");
+                Directory.CreateDirectory(fdb);
+                fdb = Path.Combine(fdb, Path.GetFileName(filePath));
+                File.Copy(filePath, fdb, true);
+
                 using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 {
                     StreamWriter sw = new StreamWriter(fs, Encoding.GetEncoding(1251));
@@ -143,6 +148,14 @@ namespace PluginsMain
             {
                 string fs = f.Substring(subs.Length).Trim('\\');
                 string fd = Path.Combine(p, fs);                
+                if(File.Exists(fd))
+                {
+                    string dt = DateTime.Now.ToString("yyyyMMddHHmm");
+                    string fdb = Path.Combine(Path.GetDirectoryName(toPath), $"Plugins\\ExcelTemplate\\Backups\\{dt}");
+                    Directory.CreateDirectory(fdb);
+                    fdb = Path.Combine(fdb, Path.GetFileName(fd));
+                    File.Copy(fd, fdb, true);
+                };
                 File.Copy(f, fd, true);
                 Console.WriteLine($" Файл шаблона {fs} успешно скопирован");
             };
