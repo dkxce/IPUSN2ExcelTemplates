@@ -13,6 +13,11 @@ https://github.com/dkxce/IPUSN2ExcelTemplates
 Templates
 C:\IPUSN2\Plugins\ExcelTemplate\Templates
 
+Бэкапы основных шаблонов и конфига лежат в папке:
+Backups
+C:\IPUSN2\Plugins\ExcelTemplate\Backups
+
+
 -----------------------------------------------------------------------------
 
 При установке содержимое папки (архива) копируется в папку с программой
