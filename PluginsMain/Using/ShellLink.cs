@@ -1,12 +1,4 @@
-﻿//
-// C# (WinAPI)
-// MSol.MachineManager.ShellLink
-// v 0.1, 16.09.2022
-// artem.karimov@weadmire.io
-// en,ru,1251,utf-8
-//
-
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
