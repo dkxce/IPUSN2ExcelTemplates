@@ -153,6 +153,11 @@ namespace PluginsMain
             string p = Path.Combine(Path.GetDirectoryName(toPath), @"Plugins\ExcelTemplate\");
             Directory.CreateDirectory(p);
             string subs = XMLSaved<int>.CurrentDirectory();
+            if (p.Trim('\\') == subs.Trim('\\'))
+            {
+                Console.WriteLine($" Копирование файлов в текущую папку невозможно");
+                return;
+            };
             string[] files = Directory.GetFiles(subs, "*.*", SearchOption.AllDirectories);
             foreach(string f in files)
             {
