@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Xml;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using System.Security.Policy;
 using MSol.PluginsMain;
 using System.Windows.Forms;
 using System.Diagnostics;
@@ -113,13 +111,24 @@ namespace PluginsMain
                 while (!sr.EndOfStream)
                     lines.Add(sr.ReadLine());
             };
+            bool save = false;
             for (int i = 0; i < lines.Count; i++)
                 if (lines[i].StartsWith("excel ="))
                 {
                     string p = Path.Combine(Path.GetDirectoryName(filePath), @"Plugins\ExcelTemplate\ExcelTemplates.exe");
                     lines[i] = $"excel = {p}";
+                    save = true;
                     break;
                 };
+            if (save)
+            {
+                using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                {
+                    StreamWriter sw = new StreamWriter(fs, Encoding.GetEncoding(1251));
+                    foreach (string l in lines)
+                        sw.WriteLine(l);
+                };
+            };
             Console.WriteLine(" Файл конфигурации успешно пропатчен");
         }
 
