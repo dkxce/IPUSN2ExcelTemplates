@@ -34,7 +34,10 @@
 **Доп Информация**:    
 - [подробнее](ExcelTemplates/bin/Debug/Информация.txt)
 
-**Примеры**:
+**Примеры**:    
 - [Примеры](Examples)         
 ![bill_example](Examples/bill_example.png)    
 ![act_example](Examples/act_example.png)    
+
+**Настройки**:    
+![config](Examples/config.png)    
