@@ -26,7 +26,7 @@ namespace ExcelTemplatesLib
 
         private void CFGForm_Load(object sender, EventArgs e)
         {
-            info.Text = $"Сохранять шаблонамы необходимо в папку:\r\n{xlsxDir}\r\n\r\n{info.Text}";
+            info.Text = $"Сохранять шаблоны необходимо в папку:\r\n{xlsxDir}\r\n\r\n{info.Text}";
             LoadCfg();
             Reload();
         }
