@@ -40,4 +40,4 @@
 ![act_example](Examples/act_example.png)    
 
 **Настройки**:    
-![config](Examples/config.png)    
+![config](Examples/configurate.png)    
