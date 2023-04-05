@@ -40,6 +40,7 @@ namespace PluginsMain
             RewriteIni(Path.Combine(path, "config.ini"));
             RewriteTemplates(path);
             CopyFiles(path);
+            CreateShortcuts(path);
             Console.WriteLine($"Установка успешно завершена");
             if(MessageBox.Show("Установка успешно завершена\r\n\r\nОткрыть файлы шаблонов для редактирования?", "Установка плагина для ИП УСН2", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 ProxyExcel(
@@ -184,6 +185,24 @@ namespace PluginsMain
                 File.Copy(f, fd, true);
                 Console.WriteLine($" Файл {fs} успешно скопирован");
             };
+        }
+
+        private static void CreateShortcuts(string toPath)
+        {
+            try
+            {
+                string p = Path.Combine(Path.GetDirectoryName(toPath), @"Plugins\ExcelTemplate\");
+                string f = Path.Combine(p, "ExcelTemplates.exe");
+                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "IPUSN2Plugins");
+                Directory.CreateDirectory(path);
+                string file = Path.Combine(path, $"ИП УСН2 ExcelTemplates - Настройки.lnk");
+                ShellLink sl = new ShellLink(file);
+                sl.TargetPath = f;
+                sl.Arguments = "/config";
+                sl.Description = "Запустить настройку плагина ExcelTemplates для ИП УСН 2";
+                sl.Save();
+            }
+            catch { };
         }
 
         public static bool AskToKill(ref string path)

@@ -9,3 +9,5 @@ C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\obj\Debug\ExcelTemp
 C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\obj\Debug\ExcelTemplatesLib.pdb
 C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\bin\Debug\SX.dll
 C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\bin\Debug\ThoughtWorks.QRCode.dll
+C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\obj\Debug\ExcelTemplatesLib.CFGForm.resources
+C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplatesLib\obj\Debug\ExcelTemplatesLib.csproj.GenerateResource.cache

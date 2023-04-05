@@ -44,6 +44,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CFGForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CFGForm.Designer.cs">
+      <DependentUpon>CFGForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Config.cs" />
     <Compile Include="ExcelTemplatesLib.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -52,6 +59,11 @@
       <Project>{d7da3df1-5b67-4945-8f68-691f613d227e}</Project>
       <Name>PluginsMain</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CFGForm.resx">
+      <DependentUpon>CFGForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

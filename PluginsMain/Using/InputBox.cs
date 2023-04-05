@@ -17,6 +17,7 @@ namespace System.Windows.Forms
         public static string pOk_Ignore = "Пропуск";
         public static bool pShowInTaskBar = false;
         public static int defWidth = 300;
+        public static bool stayInTop = false;
 
         private string _title;
         private string _promptText;
@@ -275,6 +276,7 @@ namespace System.Windows.Forms
             form.MaximizeBox = false;
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
+            if (stayInTop) form.TopMost = true;
 
             if (parent != null)
             {
@@ -343,6 +345,7 @@ namespace System.Windows.Forms
             form.MaximizeBox = false;
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
+            if (stayInTop) form.TopMost = true;
 
             if (parent != null)
             {
@@ -411,6 +414,7 @@ namespace System.Windows.Forms
             form.MaximizeBox = false;
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
+            if (stayInTop) form.TopMost = true;
 
             if (parent != null)
             {
@@ -506,6 +510,7 @@ namespace System.Windows.Forms
             form.MaximizeBox = false;
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
+            if (stayInTop) form.TopMost = true;
 
             _additData[1] = testBox;
 
@@ -615,11 +620,12 @@ namespace System.Windows.Forms
             form.Controls.AddRange(new Control[] { label, comboBox, buttonOk, buttonCancel, picture });
             form.ClientSize = new Size(Math.Max(defWidth, label.Right + 10), form.ClientSize.Height);
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
-            form.StartPosition = FormStartPosition.CenterParent;
+            if (parent != null) form.StartPosition = FormStartPosition.CenterParent; else form.StartPosition = FormStartPosition.WindowsDefaultLocation;
             form.MinimizeBox = false;
             form.MaximizeBox = false;
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
+            if (stayInTop) form.TopMost = true;
 
             if (parent != null)
             {
@@ -699,6 +705,7 @@ namespace System.Windows.Forms
             form.MaximizeBox = false;
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
+            if (stayInTop) form.TopMost = true;
 
             _result = DialogResult.None;
             if (parent != null)
@@ -776,6 +783,7 @@ namespace System.Windows.Forms
             form.MaximizeBox = false;
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
+            if (stayInTop) form.TopMost = true;
 
             if (parent != null)
             {
@@ -851,6 +859,7 @@ namespace System.Windows.Forms
             form.MaximizeBox = false;
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
+            if (stayInTop) form.TopMost = true;
 
             if (parent != null)
             {
@@ -1167,6 +1176,7 @@ namespace System.Windows.Forms
             form.MaximizeBox = false;
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
+            if (stayInTop) form.TopMost = true;
 
             if (parent != null)
             {
@@ -1247,6 +1257,7 @@ namespace System.Windows.Forms
             form.MaximizeBox = false;
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
+            if (stayInTop) form.TopMost = true;
 
             DialogResult _result;
             if (parent != null)
@@ -1423,6 +1434,7 @@ namespace System.Windows.Forms
             form.MaximizeBox = false;
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
+            if (stayInTop) form.TopMost = true;
 
             DialogResult _result;
             if (parent != null)
@@ -1538,6 +1550,7 @@ namespace System.Windows.Forms
             form.MaximizeBox = false;
             form.AcceptButton = Buttons[0];
             form.CancelButton = Buttons[btnCount - 1];
+            if (stayInTop) form.TopMost = true;
 
             DialogResult _result;
             if (parent != null)
@@ -1627,6 +1640,7 @@ namespace System.Windows.Forms
             form.MaximizeBox = false;
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
+            if (stayInTop) form.TopMost = true;
 
             DialogResult _result;
             if (parent != null)
@@ -1721,6 +1735,7 @@ namespace System.Windows.Forms
             form.MaximizeBox = false;
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
+            if (stayInTop) form.TopMost = true;
 
             DialogResult _result;
             if (parent != null)
@@ -2983,6 +2998,7 @@ namespace System.Windows.Forms
             form.Controls.Add(panel1);
             form.Controls.Add(panel2);
             form.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            if (stayInTop) form.TopMost = true;
 
             {
                 //button1.Text = fullview ? pCancel_Text : pOk_Text;

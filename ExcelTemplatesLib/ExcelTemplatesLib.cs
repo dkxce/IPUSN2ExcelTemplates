@@ -49,7 +49,16 @@ namespace ExcelTemplatesLib
 
         public void OpenConfig()
         {
-            MessageBox.Show("В этой версии плагина настройки не предусмотрены", PluginName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            // MessageBox.Show("В этой версии плагина настройки не предусмотрены", PluginName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            CFGForm cfgf = new CFGForm();
+            cfgf.Show();
+            while (cfgf.IsAlive)
+            {
+                Application.DoEvents();
+                System.Threading.Thread.Sleep(250);
+            };
+            cfgf.Dispose();
         }
 
         public void Run(string filePath, string args)
@@ -211,21 +220,70 @@ namespace ExcelTemplatesLib
             catch { };
             return true;
         }
+        
+        private string SelectTemplate(string docType)
+        {
+            string[] files = Directory.GetFiles(Path.Combine(CurrDir, "Templates"), $"*{docType}*.xlsx", SearchOption.TopDirectoryOnly);
+            if(files != null && files.Length > 0) 
+            {
+                string[] values = new string[files.Length];
+                for(int i = 0; i < files.Length; i++) values[i] = Path.GetFileName(files[i]);
+                int sf = 0;
+                InputBox.defWidth = 400;
+                InputBox.stayInTop = true;
+                DialogResult dr = InputBox.QueryListBox("Формирование документа", $"Выберите шаблон {docType}а из списка:", values, ref sf);
+                if (dr != DialogResult.OK) return null;
+                return files[sf];
+            };
+            return null;
+        }
 
         private void ProcessDocument(ExportedDocument doc, string sourcePath = null)
         {
             bool add = string.IsNullOrEmpty(doc.GetDocField("PARTNER_INN")) && string.IsNullOrEmpty(doc.GetDocField("PARTNER_KPP"));
-            string suffix = doc.DocType == "счет" && add ? "_QR" : "";
-
             string tmpName = null;
             string tmpPath = null;
-            foreach (string prefix in new string[] { doc.GetDocField("MYINN") /* Individual Design */, "template" /* Iniversal Design */ })
+
+            PluginConfig pc = new PluginConfig();
+            if (File.Exists(PluginConfig.FileName)) pc = PluginConfig.Load(PluginConfig.FileName);
+
+            if (pc.StartMode == 3) // ИНН
             {
-                tmpName = $"_{prefix}_{doc.DocType}{suffix}.xlsx";
-                tmpPath = Path.Combine(Path.Combine(CurrDir, "Templates"), tmpName);
-                if (File.Exists(tmpPath)) break;
+                string suffix = doc.DocType == "счет" && add ? "_QR" : "";
+                foreach (string prefix in new string[] { doc.GetDocField("MYINN") /* Individual Design */ })
+                {
+                    tmpName = $"_{prefix}_{doc.DocType}{suffix}.xlsx";
+                    tmpPath = Path.Combine(Path.Combine(CurrDir, "Templates"), tmpName);
+                    if (File.Exists(tmpPath)) break;
+                };
+            }
+            else if (pc.StartMode == 2) // universal
+            {
+                string suffix = doc.DocType == "счет" && add ? "_QR" : "";
+                foreach (string prefix in new string[] { "template" /* Universal Design */ })
+                {
+                    tmpName = $"_{prefix}_{doc.DocType}{suffix}.xlsx";
+                    tmpPath = Path.Combine(Path.Combine(CurrDir, "Templates"), tmpName);
+                    if (File.Exists(tmpPath)) break;
+                };
+            }
+            else if (pc.StartMode == 1) // selectable
+            {
+                tmpPath = SelectTemplate(doc.DocType);
+                if (!string.IsNullOrEmpty(tmpPath)) tmpName = Path.GetFileName(tmpPath);
+            }
+            else if (pc.StartMode == 0) // default
+            {
+                string suffix = doc.DocType == "счет" && add ? "_QR" : "";
+                foreach (string prefix in new string[] { doc.GetDocField("MYINN") /* Individual Design */, "template" /* Universal Design */ })
+                {
+                    tmpName = $"_{prefix}_{doc.DocType}{suffix}.xlsx";
+                    tmpPath = Path.Combine(Path.Combine(CurrDir, "Templates"), tmpName);
+                    if (File.Exists(tmpPath)) break;
+                };
             };
-            if(!File.Exists(tmpPath))
+
+            if (!File.Exists(tmpPath))
             {
                 MessageBox.Show($"Файл шаблона {tmpName} не найден", PluginName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
