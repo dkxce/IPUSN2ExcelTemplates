@@ -362,6 +362,12 @@ namespace ExcelTemplatesLib
         // дублирование строк
         private static void EnlargeRows(SmartXLS.WorkBook wb, string txtFrom, string txtTo, int count)
         {
+            List<SmartXLS.ShapePos> poses = new List<SmartXLS.ShapePos>();
+            for (int i = 0; i < wb.PictureCount; i++)
+                poses.Add(wb.getPictureShape(i).ShapePos);
+
+            int addedRows = wb.LastRow;
+
             int cFrom = FindRow(wb, txtFrom);
             int cTo = FindRow(wb, txtTo);
             if (cFrom > 0 && cTo > 0)
@@ -370,6 +376,11 @@ namespace ExcelTemplatesLib
                     CopyRowsNext(wb, cFrom, cTo, false);
                 DeleteRows(wb, cFrom, cTo, true);
             };
+
+            addedRows = wb.LastRow - addedRows;
+            for (int i = 0; i < poses.Count; i++)
+                if((poses[i].Y1 > cTo) && (poses[i].Y1 + addedRows > 0) && (poses[i].Y2 + addedRows > 0))
+                    wb.getPictureShape(i).setPosition(poses[i].X1, poses[i].Y1 + addedRows, poses[i].X2, poses[i].Y2 + addedRows);
         }
 
         // установка переменных
