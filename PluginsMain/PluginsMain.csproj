@@ -41,6 +41,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Using\InputBox.cs" />
     <Compile Include="Using\Installer.cs" />
+    <Compile Include="Using\MessageBoxManager.cs" />
     <Compile Include="Using\ShellLink.cs" />
     <Compile Include="Using\XMLSaved.cs" />
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />

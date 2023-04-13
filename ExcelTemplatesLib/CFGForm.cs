@@ -40,6 +40,7 @@ namespace ExcelTemplatesLib
         {
             if (File.Exists(PluginConfig.FileName)) pluginConfig = PluginConfig.Load(PluginConfig.FileName);
             selStartBox.SelectedIndex = pluginConfig.StartMode;
+            qrip.Checked = pluginConfig.QRIP;
         }
 
         private void SaveCfg()
@@ -92,6 +93,12 @@ namespace ExcelTemplatesLib
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             try { System.Diagnostics.Process.Start("https://github.com/dkxce/IPUSN2ExcelTemplates"); } catch { };
+        }
+
+        private void qrip_CheckedChanged(object sender, EventArgs e)
+        {
+            pluginConfig.QRIP = qrip.Checked;
+            SaveCfg();
         }
     }
 }

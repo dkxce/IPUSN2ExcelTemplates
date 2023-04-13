@@ -46,7 +46,11 @@ namespace PluginsMain
                 ProxyExcel(
                     Path.Combine(path, @"Plugins\ExcelTemplate\Templates\_template_акт.xlsx"),
                     Path.Combine(path, @"Plugins\ExcelTemplate\Templates\_template_счет.xlsx"),
-                    Path.Combine(path, @"Plugins\ExcelTemplate\Templates\_template_счет_QR.xlsx")
+                    Path.Combine(path, @"Plugins\ExcelTemplate\Templates\_template_счет_QR.xlsx"),
+                    Path.Combine(path, @"Plugins\ExcelTemplate\Templates\_template_акт+счет.xlsx"),
+                    Path.Combine(path, @"Plugins\ExcelTemplate\Templates\_template_акт+счет_QR.xlsx"),
+                    Path.Combine(path, @"Plugins\ExcelTemplate\Templates\_template_счет_договор.xlsx"),
+                    Path.Combine(path, @"Plugins\ExcelTemplate\Templates\_template_счет_договор_QR.xlsx")
                     );
         }
 
@@ -163,7 +167,12 @@ namespace PluginsMain
         }
 
         private static void CopyFiles(string toPath)
-        {
+        {            
+            MessageBoxManager.Yes = "Да";
+            MessageBoxManager.No = "Да для всех";
+            MessageBoxManager.Cancel = "Нет";
+            MessageBoxManager.Register();
+
             string p = Path.Combine(Path.GetDirectoryName(toPath), @"Plugins\ExcelTemplate\");
             Directory.CreateDirectory(p);
             string subs = XMLSaved<int>.CurrentDirectory();
@@ -173,6 +182,7 @@ namespace PluginsMain
                 return;
             };
             string[] files = Directory.GetFiles(subs, "*.*", SearchOption.AllDirectories);
+            DialogResult dr = DialogResult.None;
             foreach(string f in files)
             {
                 string fs = f.Substring(subs.Length).Trim('\\');
@@ -180,11 +190,19 @@ namespace PluginsMain
                 Directory.CreateDirectory(Path.GetDirectoryName(fd));
                 string sfs = Path.GetFileName(fs);
                 if (Path.GetExtension(sfs).ToLower() == ".xlsx" && File.Exists(fd))
-                    if (MessageBox.Show($"Переписать существующий шаблон `{sfs}`?", "Установка плагина", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                        continue;
+                {
+                    if (dr != DialogResult.No) // "Да для всех"
+                    {
+                        dr = MessageBox.Show($"Переписать существующий шаблон `{sfs}`?", "Установка плагина", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                        if (dr == DialogResult.Cancel)
+                            continue;
+                    };
+                };
                 File.Copy(f, fd, true);
                 Console.WriteLine($" Файл {fs} успешно скопирован");
             };
+
+            MessageBoxManager.Unregister();
         }
 
         private static void CreateShortcuts(string toPath)

@@ -220,19 +220,37 @@ namespace ExcelTemplatesLib
             catch { };
             return true;
         }
-        
-        private string SelectTemplate(string docType)
+
+        private string SelectTemplateLast(string docType, PluginConfig pc)
+        {
+            for (int i = pc.LastTemplates.Count - 1; i >= 0; i--)
+                if (pc.LastTemplates[i].d == docType)
+                    return Path.Combine(Path.Combine(CurrDir, "Templates"), pc.LastTemplates[i].f);
+            return null;
+        }
+
+        private string SelectTemplate(string docType, PluginConfig pc)
         {
             string[] files = Directory.GetFiles(Path.Combine(CurrDir, "Templates"), $"*{docType}*.xlsx", SearchOption.TopDirectoryOnly);
             if(files != null && files.Length > 0) 
             {
-                string[] values = new string[files.Length];
-                for(int i = 0; i < files.Length; i++) values[i] = Path.GetFileName(files[i]);
+                List<string> values = new List<string>();
+                for(int i = 0; i < files.Length; i++) values.Add(Path.GetFileName(files[i]));
                 int sf = 0;
+                for(int i= pc.LastTemplates.Count-1; i>=0;i--)
+                    if (pc.LastTemplates[i].d == docType)
+                    {
+                        sf = values.IndexOf(pc.LastTemplates[i].f);
+                        if (sf < 0) sf = 0;
+                        pc.LastTemplates.RemoveAt(i);
+                        break;
+                    };
                 InputBox.defWidth = 400;
                 InputBox.stayInTop = true;
-                DialogResult dr = InputBox.QueryListBox("Формирование документа", $"Выберите шаблон {docType}а из списка:", values, ref sf);
+                DialogResult dr = InputBox.QueryListBox("Формирование документа", $"Выберите шаблон {docType}а из списка:", values.ToArray(), ref sf);
                 if (dr != DialogResult.OK) return null;
+                pc.LastTemplates.Add(new PluginConfig.DocumentFile(docType, values[sf]));
+                PluginConfig.SaveHere("config.xml", pc);
                 return files[sf];
             };
             return null;
@@ -240,14 +258,21 @@ namespace ExcelTemplatesLib
 
         private void ProcessDocument(ExportedDocument doc, string sourcePath = null)
         {
-            bool add = string.IsNullOrEmpty(doc.GetDocField("PARTNER_INN")) && string.IsNullOrEmpty(doc.GetDocField("PARTNER_KPP"));
-            string tmpName = null;
-            string tmpPath = null;
-
             PluginConfig pc = new PluginConfig();
             if (File.Exists(PluginConfig.FileName)) pc = PluginConfig.Load(PluginConfig.FileName);
 
-            if (pc.StartMode == 3) // ИНН
+            bool add = string.IsNullOrEmpty(doc.GetDocField("PARTNER_INN")) && string.IsNullOrEmpty(doc.GetDocField("PARTNER_KPP"));
+            if ((!add) && pc.QRIP && doc.GetDocField("PARTNER").ToLower().Contains("индивидуальный предприниматель")) add = true;
+
+            string tmpName = null;
+            string tmpPath = null;            
+
+            if(pc.StartMode == 4) // Last Selected
+            {
+                tmpPath = SelectTemplateLast(doc.DocType, pc);
+                if (!string.IsNullOrEmpty(tmpPath)) tmpName = Path.GetFileName(tmpPath);
+            }
+            else if (pc.StartMode == 3) // ИНН
             {
                 string suffix = doc.DocType == "счет" && add ? "_QR" : "";
                 foreach (string prefix in new string[] { doc.GetDocField("MYINN") /* Individual Design */ })
@@ -269,7 +294,7 @@ namespace ExcelTemplatesLib
             }
             else if (pc.StartMode == 1) // selectable
             {
-                tmpPath = SelectTemplate(doc.DocType);
+                tmpPath = SelectTemplate(doc.DocType, pc);
                 if (!string.IsNullOrEmpty(tmpPath)) tmpName = Path.GetFileName(tmpPath);
             }
             else if (pc.StartMode == 0) // default
@@ -304,8 +329,13 @@ namespace ExcelTemplatesLib
                 return;
             };
 
+            // Fill Defaults
+            SetVar(wb, "%TODAY%", DateTime.Now.ToString("dd.MM.yyyy"), false);
+            SetVar(wb, "%NOW%", DateTime.Now.ToString("HH:mm:ss"), false);
+            SetVar(wb, "%SOFTWARE%", "Excel Template плагин для ИП УСН 2", false);
+
             // FILL DOC
-            for(int i =0;i<doc.DocFields.Count;i++)
+            for (int i =0;i<doc.DocFields.Count;i++)
             {
                 string id = doc.DocFields[i].id.Trim('%', '$', ' ');
                 SetVar(wb, $"%{id}%", doc.DocFields[i].value?.Trim(), false);
@@ -324,7 +354,7 @@ namespace ExcelTemplatesLib
             };
 
             // Add QrCode
-            if(doc.DocType == "счет") AddQRCode(doc, wb);
+            if(doc.DocType == "счет") AddQRCode(doc, wb, pc);
             
             SaveResult(wb, sourcePath);            
         }
@@ -353,7 +383,7 @@ namespace ExcelTemplatesLib
                     if (!txt.Contains("%")) continue;
                     string ntxt = txt.Replace(varName, value);
                     if (ntxt == txt) continue;
-                    wb.setText(r, c, ntxt);
+                    try { wb.setText(r, c, ntxt); } catch (Exception ex) { wb.setText(r, c, txt); };
                     if (onlyFirst) return;
                 };
             };
@@ -407,7 +437,7 @@ namespace ExcelTemplatesLib
         }
 
         // добавляем QRCode
-        private static void AddQRCode(ExportedDocument doc, SmartXLS.WorkBook wb)
+        private static void AddQRCode(ExportedDocument doc, SmartXLS.WorkBook wb, PluginConfig pc)
         {
             string contract = doc.GetDocField("BYCONTRACT");
             if (!string.IsNullOrEmpty(contract)) contract = "по договору " + contract.ToLower().Replace("по договору", "").Trim();
@@ -430,6 +460,7 @@ namespace ExcelTemplatesLib
                     );
 
             bool add = string.IsNullOrEmpty(doc.GetDocField("PARTNER_INN")) && string.IsNullOrEmpty(doc.GetDocField("PARTNER_KPP"));
+            if ((!add) && pc.QRIP && doc.GetDocField("PARTNER").ToLower().Contains("индивидуальный предприниматель")) add = true;
 
             int[] rcf = FindRC(wb, "%IMAGEFROM%");
             int[] rct = FindRC(wb, "%IMAGETO%");

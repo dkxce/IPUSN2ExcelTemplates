@@ -40,6 +40,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.info = new System.Windows.Forms.Label();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.qrip = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // listLabel
@@ -114,7 +115,8 @@
             "Выбирать актуальный шаблон (ИНН, общий)",
             "Показывать список шаблонов",
             "Выбирать общий шаблон",
-            "Выбирать шаблон по ИНН"});
+            "Выбирать шаблон по ИНН",
+            "Последний выбранный шаблон из списка"});
             this.selStartBox.Location = new System.Drawing.Point(173, 442);
             this.selStartBox.Name = "selStartBox";
             this.selStartBox.Size = new System.Drawing.Size(260, 21);
@@ -125,7 +127,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label2.Location = new System.Drawing.Point(439, 10);
+            this.label2.Location = new System.Drawing.Point(439, 33);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(84, 13);
             this.label2.TabIndex = 5;
@@ -134,7 +136,7 @@
             // info
             // 
             this.info.AutoSize = true;
-            this.info.Location = new System.Drawing.Point(439, 34);
+            this.info.Location = new System.Drawing.Point(439, 57);
             this.info.Name = "info";
             this.info.Size = new System.Drawing.Size(415, 351);
             this.info.TabIndex = 6;
@@ -151,11 +153,23 @@
             this.linkLabel1.Text = "https://github.com/dkxce/IPUSN2ExcelTemplates";
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
+            // qrip
+            // 
+            this.qrip.AutoSize = true;
+            this.qrip.Location = new System.Drawing.Point(442, 8);
+            this.qrip.Name = "qrip";
+            this.qrip.Size = new System.Drawing.Size(244, 17);
+            this.qrip.TabIndex = 8;
+            this.qrip.Text = "Допускать печать QR-кода оплаты для ИП";
+            this.qrip.UseVisualStyleBackColor = true;
+            this.qrip.CheckedChanged += new System.EventHandler(this.qrip_CheckedChanged);
+            // 
             // CFGForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(873, 474);
+            this.Controls.Add(this.qrip);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.info);
             this.Controls.Add(this.label2);
@@ -189,5 +203,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label info;
         private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.CheckBox qrip;
     }
 }
