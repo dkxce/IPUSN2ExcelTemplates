@@ -42,7 +42,7 @@ namespace ExcelTemplatesLib
             selStartBox.SelectedIndex = pluginConfig.StartMode;
             qrip.Checked = pluginConfig.QRIP;
             matrixBar.Checked = pluginConfig.MatrixBar;
-            code128.Checked = pluginConfig.Code128Bar;
+            code39.Checked = pluginConfig.Code39Bar;
         }
 
         private void SaveCfg()
@@ -109,9 +109,9 @@ namespace ExcelTemplatesLib
             SaveCfg();
         }
 
-        private void code128_CheckedChanged(object sender, EventArgs e)
+        private void code39_CheckedChanged(object sender, EventArgs e)
         {
-            pluginConfig.Code128Bar = code128.Checked;
+            pluginConfig.Code39Bar = code39.Checked;
             SaveCfg();
         }
     }

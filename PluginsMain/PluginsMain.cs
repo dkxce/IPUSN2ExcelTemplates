@@ -74,6 +74,9 @@ namespace PluginsMain
         [XmlElement("Type")]
         public string DocType = "счет";
 
+        [XmlElement("IntType")]
+        public int IntType = 2;
+
         [XmlArray("Document"), XmlArrayItem("Field")]
         public List<Field> DocFields = new List<Field>();
 

@@ -12,7 +12,7 @@ namespace ExcelTemplatesLib
         public byte StartMode = 0;
         public bool QRIP = false;
         public bool MatrixBar = false;
-        public bool Code128Bar = false;
+        public bool Code39Bar = false;
         [XmlArrayItem("Document")]
         public List<DocumentFile> LastTemplates = new List<DocumentFile>();
 

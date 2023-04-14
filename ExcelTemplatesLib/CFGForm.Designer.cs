@@ -42,7 +42,7 @@
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.qrip = new System.Windows.Forms.CheckBox();
             this.matrixBar = new System.Windows.Forms.CheckBox();
-            this.code128 = new System.Windows.Forms.CheckBox();
+            this.code39 = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // listLabel
@@ -177,23 +177,23 @@
             this.matrixBar.UseVisualStyleBackColor = true;
             this.matrixBar.CheckedChanged += new System.EventHandler(this.matrixBar_CheckedChanged);
             // 
-            // checkBox1
+            // code39
             // 
-            this.code128.AutoSize = true;
-            this.code128.Location = new System.Drawing.Point(442, 32);
-            this.code128.Name = "checkBox1";
-            this.code128.Size = new System.Drawing.Size(173, 17);
-            this.code128.TabIndex = 10;
-            this.code128.Text = "Печатать штрих-код Code128";
-            this.code128.UseVisualStyleBackColor = true;
-            this.code128.CheckedChanged += new System.EventHandler(this.code128_CheckedChanged);
+            this.code39.AutoSize = true;
+            this.code39.Location = new System.Drawing.Point(442, 32);
+            this.code39.Name = "code39";
+            this.code39.Size = new System.Drawing.Size(167, 17);
+            this.code39.TabIndex = 10;
+            this.code39.Text = "Печатать штрих-код Code39";
+            this.code39.UseVisualStyleBackColor = true;
+            this.code39.CheckedChanged += new System.EventHandler(this.code39_CheckedChanged);
             // 
             // CFGForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(873, 474);
-            this.Controls.Add(this.code128);
+            this.Controls.Add(this.code39);
             this.Controls.Add(this.matrixBar);
             this.Controls.Add(this.qrip);
             this.Controls.Add(this.linkLabel1);
@@ -231,6 +231,6 @@
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.CheckBox qrip;
         private System.Windows.Forms.CheckBox matrixBar;
-        private System.Windows.Forms.CheckBox code128;
+        private System.Windows.Forms.CheckBox code39;
     }
 }

@@ -346,11 +346,12 @@ namespace ExcelTemplatesLib
                 SetVar(wb, $"%{id}%", doc.DocFields[i].value?.Trim(), false);
                 if (id == "NUMBER") dInfo += $"|{id}=" + doc.DocFields[i].value?.Trim();
                 if (id == "DATE") dInfo += $"|{id}=" + doc.DocFields[i].value?.Trim();
-                if (id == "NUMBER") dNum = doc.DocFields[i].value?.Trim();
-                if (id == "DATE") dDat = doc.DocFields[i].value?.Trim();
+                if (id == "NUMBER") dNum = doc.DocFields[i].value?.Trim().Replace("$","*");
+                if (id == "SHORTDATE") dDat = doc.DocFields[i].value?.Trim().Replace("$", "*");
             };
             string matrix = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding(1251).GetBytes(dInfo));
-            string barcod = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding(1251).GetBytes($"{doc.DocType}${dNum}${dDat}"));
+            string barcod = $"${doc.IntType}${System.Web.HttpUtility.UrlEncode(dNum)}${System.Web.HttpUtility.UrlEncode(dDat)}";
+            barcod = Regex.Replace(barcod.ToUpper(), "[^0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ\\-\\.\\s\\$\\/\\+\\%\\*]", " ");
 
             // ENLARGE ITEMS
             if (doc.DocItems.Count > 0)
@@ -371,9 +372,9 @@ namespace ExcelTemplatesLib
                 // Add QrCode
                 if (doc.DocType == "счет") AddQRCode(doc, wb, pc);
 
-                // Add Code128
+                // Add Code39
                 if (_repl) { _r = -1; _c = -1; };
-                AddBarCode(wb, barcod.Replace("=","$"), pc.Code128Bar, ref _r, ref _c, out _repl);
+                AddBarCode(wb, barcod, pc.Code39Bar, ref _r, ref _c, out _repl);
 
                 // Add Matrix Code
                 if (_repl) { _r = -1; _c = -1; };
