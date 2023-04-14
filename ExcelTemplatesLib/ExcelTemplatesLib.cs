@@ -12,9 +12,7 @@ using PluginsMain;
 using System.Xml;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using System.Security;
 using System.Drawing.Imaging;
-using System.Security.Cryptography;
 
 namespace ExcelTemplatesLib
 {
@@ -233,8 +231,11 @@ namespace ExcelTemplatesLib
 
         private string SelectTemplate(string docType, PluginConfig pc)
         {
-            string[] files = Directory.GetFiles(Path.Combine(CurrDir, "Templates"), $"*{docType}*.xlsx", SearchOption.TopDirectoryOnly);
-            if(files != null && files.Length > 0) 
+            List<string> fls = new List<string>();
+            fls.AddRange(Directory.GetFiles(Path.Combine(CurrDir, "Templates"), $"*{docType}*.xlsx", SearchOption.TopDirectoryOnly));
+            fls.AddRange(Directory.GetFiles(Path.Combine(CurrDir, "Templates"), $"*{docType}*.xlsm", SearchOption.TopDirectoryOnly));
+            string[] files = fls.ToArray();
+            if (files != null && files.Length > 0) 
             {
                 List<string> values = new List<string>();
                 for(int i = 0; i < files.Length; i++) values.Add(Path.GetFileName(files[i]));
@@ -317,6 +318,7 @@ namespace ExcelTemplatesLib
             };
 
             SmartXLS.WorkBook wb = null;
+            bool isXLSM = false;
             try
             {
                 wb = new SmartXLS.WorkBook();
@@ -324,6 +326,7 @@ namespace ExcelTemplatesLib
                 wb.Sheet = 0;
                 wb.PrintHeader = "";
                 wb.PrintFooter = "";
+                isXLSM = Path.GetExtension(tmpPath).ToLower().EndsWith("m");
             }
             catch (Exception ex)
             {
@@ -344,6 +347,7 @@ namespace ExcelTemplatesLib
             {
                 string id = doc.DocFields[i].id.Trim('%', '$', ' ');
                 SetVar(wb, $"%{id}%", doc.DocFields[i].value?.Trim(), false);
+                SetVarEn(wb, $"%{id}_EN%", doc.DocFields[i].value?.Trim(), false);
                 if (id == "NUMBER") dInfo += $"|{id}=" + doc.DocFields[i].value?.Trim();
                 if (id == "DATE") dInfo += $"|{id}=" + doc.DocFields[i].value?.Trim();
                 if (id == "NUMBER") dNum = doc.DocFields[i].value?.Trim().Replace("$","*");
@@ -362,6 +366,7 @@ namespace ExcelTemplatesLib
                     {
                         string id = doc.DocItems[x].DocFields[i].id.Trim('%', '$', ' ');
                         SetVar(wb, $"%{id}%", doc.DocItems[x].DocFields[i].value?.Trim(), true);
+                        SetVarEn(wb, $"%{id}_EN%", doc.DocItems[x].DocFields[i].value?.Trim(), true);
                     };
             };
 
@@ -381,7 +386,7 @@ namespace ExcelTemplatesLib
                 AddMatrixCode(wb, matrix, pc.MatrixBar, ref _r, ref _c, out _repl);                
             };
 
-            SaveResult(wb, sourcePath);            
+            SaveResult(wb, sourcePath, isXLSM);            
         }
 
         // дублирование строк
@@ -423,6 +428,30 @@ namespace ExcelTemplatesLib
                     if (onlyFirst) return;
                 };
             };
+        }
+
+        private static void SetVarEn(SmartXLS.WorkBook wb, string varName, string value, bool onlyFirst)
+        {
+            for (int c = 0; c <= wb.LastCol; c++)
+            {
+                for (int r = 0; r <= wb.LastRow; r++)
+                {
+                    string txt = wb.getText(r, c);
+                    if (!txt.Contains(varName)) continue;
+                    string ntxt = txt.Replace(varName, Translit(value));
+                    if (ntxt == txt) continue;
+                    try { wb.setText(r, c, ntxt); } catch (Exception ex) { wb.setText(r, c, txt); };
+                    if (onlyFirst) return;
+                };
+            };
+        }
+
+        private static bool FindVar(SmartXLS.WorkBook wb, string varName)
+        {
+            for (int c = 0; c <= wb.LastCol; c++)
+                for (int r = 0; r <= wb.LastRow; r++)
+                    if (wb.getText(r, c).Contains(varName)) return true;
+            return false;
         }
 
         // поиск строки с текстом
@@ -633,24 +662,38 @@ namespace ExcelTemplatesLib
         }
 
         // Сохраняем в файл
-        private void SaveResult(SmartXLS.WorkBook wb, string fName = null) 
+        private void SaveResult(SmartXLS.WorkBook wb, string fName = null, bool isXLSM = false) 
         {
             bool add2old = true;
             if (string.IsNullOrEmpty(fName))
             {
                 fName = Path.GetTempFileName();
                 if (File.Exists(fName)) File.Delete(fName);
-                fName += ".xlsx";                
+                fName += isXLSM ? ".xlsm" : ".xlsx";
             }
             else
             {
                 string fExt = Path.GetExtension(fName).ToLower();
-                if(fExt != ".xlsx") fName += ".xlsx";
+                if (isXLSM)
+                {
+                    if (fExt != ".xlsm") fName += ".xlsm";
+                }
+                else
+                {
+                    if (fExt != ".xlsx") fName += ".xlsx";
+                };
                 add2old = false;
             };
             wb.writeXLSX(fName);            
             ProxyQuery(fName);
             if(add2old) AddFileToOld(fName);
+        }
+
+        private static string Translit(string text, bool translate = true)
+        {
+            string res = TRANSLIT.Translit.ToEn(text);
+            if ((!translate) || (text == res)) return res;
+            return TRANSLIT.Translate.ToEn(text);
         }
     }
 }

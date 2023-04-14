@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
@@ -53,8 +55,10 @@ namespace ExcelTemplatesLib
         private void Reload()
         {
             xlsxView.Items.Clear();
-            string[] files = Directory.GetFiles(xlsxDir, "*.xlsx", SearchOption.TopDirectoryOnly);
-            foreach ( string f in files ) 
+            List<string> fls = new List<string>();
+            fls.AddRange(Directory.GetFiles(xlsxDir, "*.xlsx", SearchOption.TopDirectoryOnly));
+            fls.AddRange(Directory.GetFiles(xlsxDir, "*.xlsm", SearchOption.TopDirectoryOnly));
+            foreach ( string f in fls ) 
             {
                 FileInfo i = new FileInfo(f);
 
