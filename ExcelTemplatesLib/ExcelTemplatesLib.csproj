@@ -31,6 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DataMatrix.net">
+      <HintPath>..\DataMatrix.net.dll</HintPath>
+    </Reference>
+    <Reference Include="DSBarCode">
+      <HintPath>..\DSBarCode.dll</HintPath>
+    </Reference>
     <Reference Include="SX">
       <HintPath>..\SX.dll</HintPath>
     </Reference>

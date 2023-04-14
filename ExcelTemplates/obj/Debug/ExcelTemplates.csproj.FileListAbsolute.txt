@@ -13,3 +13,5 @@ C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplates\bin\Debug\ExcelTemplat
 C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplates\bin\Debug\ExcelTemplatesLib.pdb
 C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplates\bin\Debug\SX.dll
 C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplates\bin\Debug\ThoughtWorks.QRCode.dll
+C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplates\bin\Debug\DataMatrix.net.dll
+C:\Users\dkxce\source\repos\ExcelTemplates\ExcelTemplates\bin\Debug\DSBarCode.dll

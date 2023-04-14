@@ -41,6 +41,8 @@ namespace ExcelTemplatesLib
             if (File.Exists(PluginConfig.FileName)) pluginConfig = PluginConfig.Load(PluginConfig.FileName);
             selStartBox.SelectedIndex = pluginConfig.StartMode;
             qrip.Checked = pluginConfig.QRIP;
+            matrixBar.Checked = pluginConfig.MatrixBar;
+            code128.Checked = pluginConfig.Code128Bar;
         }
 
         private void SaveCfg()
@@ -98,6 +100,18 @@ namespace ExcelTemplatesLib
         private void qrip_CheckedChanged(object sender, EventArgs e)
         {
             pluginConfig.QRIP = qrip.Checked;
+            SaveCfg();
+        }
+
+        private void matrixBar_CheckedChanged(object sender, EventArgs e)
+        {
+            pluginConfig.MatrixBar = matrixBar.Checked;
+            SaveCfg();
+        }
+
+        private void code128_CheckedChanged(object sender, EventArgs e)
+        {
+            pluginConfig.Code128Bar = code128.Checked;
             SaveCfg();
         }
     }

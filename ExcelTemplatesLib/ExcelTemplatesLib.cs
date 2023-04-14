@@ -13,6 +13,8 @@ using System.Xml;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Security;
+using System.Drawing.Imaging;
+using System.Security.Cryptography;
 
 namespace ExcelTemplatesLib
 {
@@ -334,12 +336,21 @@ namespace ExcelTemplatesLib
             SetVar(wb, "%NOW%", DateTime.Now.ToString("HH:mm:ss"), false);
             SetVar(wb, "%SOFTWARE%", "Excel Template плагин для ИП УСН 2", false);
 
-            // FILL DOC
+            // FILL DOC            
+            string dInfo = $"TYPE={doc.DocType}";
+            string dNum = "";
+            string dDat = "";
             for (int i =0;i<doc.DocFields.Count;i++)
             {
                 string id = doc.DocFields[i].id.Trim('%', '$', ' ');
                 SetVar(wb, $"%{id}%", doc.DocFields[i].value?.Trim(), false);
+                if (id == "NUMBER") dInfo += $"|{id}=" + doc.DocFields[i].value?.Trim();
+                if (id == "DATE") dInfo += $"|{id}=" + doc.DocFields[i].value?.Trim();
+                if (id == "NUMBER") dNum = doc.DocFields[i].value?.Trim();
+                if (id == "DATE") dDat = doc.DocFields[i].value?.Trim();
             };
+            string matrix = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding(1251).GetBytes(dInfo));
+            string barcod = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding(1251).GetBytes($"{doc.DocType}${dNum}${dDat}"));
 
             // ENLARGE ITEMS
             if (doc.DocItems.Count > 0)
@@ -353,9 +364,22 @@ namespace ExcelTemplatesLib
                     };
             };
 
-            // Add QrCode
-            if(doc.DocType == "счет") AddQRCode(doc, wb, pc);
-            
+            // Codes
+            {
+                int _r = -1; int _c = -1; bool _repl = true;
+
+                // Add QrCode
+                if (doc.DocType == "счет") AddQRCode(doc, wb, pc);
+
+                // Add Code128
+                if (_repl) { _r = -1; _c = -1; };
+                AddBarCode(wb, barcod.Replace("=","$"), pc.Code128Bar, ref _r, ref _c, out _repl);
+
+                // Add Matrix Code
+                if (_repl) { _r = -1; _c = -1; };
+                AddMatrixCode(wb, matrix, pc.MatrixBar, ref _r, ref _c, out _repl);                
+            };
+
             SaveResult(wb, sourcePath);            
         }
 
@@ -508,6 +532,103 @@ namespace ExcelTemplatesLib
             bmpO.Save(tmpF);
             wb.addPicture(fcol, frow, tcol, trow, tmpF);
             File.Delete(tmpF);
+        }
+
+        private void AddMatrixCode(SmartXLS.WorkBook wb, string data, bool paste, ref int _r, ref int _c, out bool replaced)
+        {
+            replaced = false;
+            int ir = -1;
+            int ic = -1;
+            for (int c = 0; c <= wb.LastCol; c++)
+                for (int r = 0; r <= wb.LastRow; r++)
+                    if(wb.getText(r,c).Contains("%MATRIX%"))
+                    {
+                        wb.setText(r, c, wb.getText(r, c).Replace("%MATRIX%", ""));
+                        ir = r;
+                        ic = c;
+                        replaced = true;
+                        _r = -1;
+                        _c = -1;
+                    };
+
+            if (!paste) return;
+
+            DataMatrix.net.DmtxImageEncoder ie = new DataMatrix.net.DmtxImageEncoder();
+            DataMatrix.net.DmtxImageEncoderOptions ops = new DataMatrix.net.DmtxImageEncoderOptions();
+            ops.ModuleSize = 3;
+            Bitmap res = ie.EncodeImage(data, ops);
+            int reswi = res.Width;
+            byte[] bytes = GetImageAsBytes(res);
+
+            if (_r >= 0) { ir = _r; replaced = false; };
+            if (_c >= 0) { ic = _c; replaced = false; };
+            if (ir < 0 || ic < 0)
+            {
+                ir = 0;
+                ic = 0;
+                int mrh = 0;
+                int pph = 16838 /* A4 */; // wb.PrintPaperHeight;
+                while (mrh < pph) mrh += wb.getRowHeight(ir++);
+            };            
+
+            wb.addPicture(_c = ic, _r = ir, ic, ir, bytes);
+        }
+
+        private void AddBarCode(SmartXLS.WorkBook wb, string data, bool paste, ref int _r, ref int _c, out bool replaced)
+        {
+            replaced = false;
+            int ir = -1;
+            int ic = -1;
+            for (int c = 0; c <= wb.LastCol; c++)
+                for (int r = 0; r <= wb.LastRow; r++)
+                    if (wb.getText(r, c).Contains("%BARCODE%"))
+                    {
+                        wb.setText(r, c, wb.getText(r, c).Replace("%BARCODE%", ""));
+                        ir = r;
+                        ic = c;
+                        replaced = true;
+                        _r = -1;
+                        _c = -1;
+                    };
+
+            if (!paste) return;
+
+            if (_r >= 0) { ir = _r; replaced = false; };
+            if (_c >= 0) { ic = _c; replaced = false; };
+            if (ir < 0 || ic < 0)
+            {
+                ir = 0;
+                ic = 0;
+                int mrh = 0;
+                int pph = 16838 /* A4 */; // wb.PrintPaperHeight;
+                while (mrh < pph) mrh += wb.getRowHeight(ir++);
+            };
+
+            DSBarCode.BarCodeCtrl bc = new DSBarCode.BarCodeCtrl();
+            bc.ShowFooter = false;
+            bc.ShowHeader = false;
+            bc.BarCodeHeight = 40;
+            bc.Width = 940;
+            bc.Height = 60;
+            bc.BarCode = data;
+
+            if (bc.IsValid)
+            {
+                string tmpF = Path.GetTempFileName();
+                bc.SaveImage(tmpF);
+                wb.addPicture(_c = ic, _r = ir, ic, ir, tmpF);
+                File.Delete(tmpF);                
+            };
+        }
+
+        private byte[] GetImageAsBytes(Bitmap bmp)
+        {
+            MemoryStream ms = new MemoryStream();
+            bmp.Save(ms, ImageFormat.Png);
+            byte[] bmpBytes = ms.GetBuffer();
+            bmp.Dispose();
+            ms.Close();
+            return bmpBytes;
         }
 
         // Сохраняем в файл

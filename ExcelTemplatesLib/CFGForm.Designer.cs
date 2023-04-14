@@ -41,6 +41,8 @@
             this.info = new System.Windows.Forms.Label();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.qrip = new System.Windows.Forms.CheckBox();
+            this.matrixBar = new System.Windows.Forms.CheckBox();
+            this.code128 = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // listLabel
@@ -127,7 +129,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label2.Location = new System.Drawing.Point(439, 33);
+            this.label2.Location = new System.Drawing.Point(439, 58);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(84, 13);
             this.label2.TabIndex = 5;
@@ -136,7 +138,7 @@
             // info
             // 
             this.info.AutoSize = true;
-            this.info.Location = new System.Drawing.Point(439, 57);
+            this.info.Location = new System.Drawing.Point(439, 82);
             this.info.Name = "info";
             this.info.Size = new System.Drawing.Size(415, 351);
             this.info.TabIndex = 6;
@@ -156,7 +158,7 @@
             // qrip
             // 
             this.qrip.AutoSize = true;
-            this.qrip.Location = new System.Drawing.Point(442, 8);
+            this.qrip.Location = new System.Drawing.Point(442, 4);
             this.qrip.Name = "qrip";
             this.qrip.Size = new System.Drawing.Size(244, 17);
             this.qrip.TabIndex = 8;
@@ -164,11 +166,35 @@
             this.qrip.UseVisualStyleBackColor = true;
             this.qrip.CheckedChanged += new System.EventHandler(this.qrip_CheckedChanged);
             // 
+            // matrixBar
+            // 
+            this.matrixBar.AutoSize = true;
+            this.matrixBar.Location = new System.Drawing.Point(442, 18);
+            this.matrixBar.Name = "matrixBar";
+            this.matrixBar.Size = new System.Drawing.Size(186, 17);
+            this.matrixBar.TabIndex = 9;
+            this.matrixBar.Text = "Печатать матричный штрих-код";
+            this.matrixBar.UseVisualStyleBackColor = true;
+            this.matrixBar.CheckedChanged += new System.EventHandler(this.matrixBar_CheckedChanged);
+            // 
+            // checkBox1
+            // 
+            this.code128.AutoSize = true;
+            this.code128.Location = new System.Drawing.Point(442, 32);
+            this.code128.Name = "checkBox1";
+            this.code128.Size = new System.Drawing.Size(173, 17);
+            this.code128.TabIndex = 10;
+            this.code128.Text = "Печатать штрих-код Code128";
+            this.code128.UseVisualStyleBackColor = true;
+            this.code128.CheckedChanged += new System.EventHandler(this.code128_CheckedChanged);
+            // 
             // CFGForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(873, 474);
+            this.Controls.Add(this.code128);
+            this.Controls.Add(this.matrixBar);
             this.Controls.Add(this.qrip);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.info);
@@ -204,5 +230,7 @@
         private System.Windows.Forms.Label info;
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.CheckBox qrip;
+        private System.Windows.Forms.CheckBox matrixBar;
+        private System.Windows.Forms.CheckBox code128;
     }
 }
