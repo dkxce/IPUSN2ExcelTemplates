@@ -349,7 +349,7 @@ namespace ExcelTemplatesLib
                 SetVar(wb, $"%{id}%", doc.DocFields[i].value?.Trim(), false);
                 SetVarEn(wb, $"%{id}_EN%", doc.DocFields[i].value?.Trim(), false);
                 if (id == "NUMBER") dInfo += $"|{id}=" + doc.DocFields[i].value?.Trim();
-                if (id == "DATE") dInfo += $"|{id}=" + doc.DocFields[i].value?.Trim();
+                if (id == "SHORTDATE") dInfo += $"|{id}=" + doc.DocFields[i].value?.Trim();
                 if (id == "NUMBER") dNum = doc.DocFields[i].value?.Trim().Replace("$","*");
                 if (id == "SHORTDATE") dDat = doc.DocFields[i].value?.Trim().Replace("$", "*");
             };
