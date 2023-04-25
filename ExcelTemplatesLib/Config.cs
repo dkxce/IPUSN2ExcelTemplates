@@ -13,6 +13,8 @@ namespace ExcelTemplatesLib
         public bool QRIP = false;
         public bool MatrixBar = false;
         public bool Code39Bar = false;
+        public string MatrixCode = "Data Matrix";
+        public string SingleCode = "Code 39";
         [XmlArrayItem("Document")]
         public List<DocumentFile> LastTemplates = new List<DocumentFile>();
 

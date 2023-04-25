@@ -13,6 +13,7 @@ using System.Xml;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Drawing.Imaging;
+using System.Security.Cryptography;
 
 namespace ExcelTemplatesLib
 {
@@ -379,11 +380,11 @@ namespace ExcelTemplatesLib
 
                 // Add Code39
                 if (_repl) { _r = -1; _c = -1; };
-                AddBarCode(wb, barcod, pc.Code39Bar, ref _r, ref _c, out _repl);
+                AddBarCode(wb, barcod, pc.Code39Bar, pc.SingleCode, ref _r, ref _c, out _repl);
 
                 // Add Matrix Code
                 if (_repl) { _r = -1; _c = -1; };
-                AddMatrixCode(wb, matrix, pc.MatrixBar, ref _r, ref _c, out _repl);                
+                AddMatrixCode(wb, matrix, pc.MatrixBar, pc.MatrixCode, ref _r, ref _c, out _repl);                
             };
 
             SaveResult(wb, sourcePath, isXLSM);            
@@ -564,7 +565,7 @@ namespace ExcelTemplatesLib
             File.Delete(tmpF);
         }
 
-        private void AddMatrixCode(SmartXLS.WorkBook wb, string data, bool paste, ref int _r, ref int _c, out bool replaced)
+        private void AddMatrixCode(SmartXLS.WorkBook wb, string data, bool paste, string codebar, ref int _r, ref int _c, out bool replaced)
         {
             replaced = false;
             int ir = -1;
@@ -582,11 +583,36 @@ namespace ExcelTemplatesLib
                     };
 
             if (!paste) return;
-
+                        
             DataMatrix.net.DmtxImageEncoder ie = new DataMatrix.net.DmtxImageEncoder();
             DataMatrix.net.DmtxImageEncoderOptions ops = new DataMatrix.net.DmtxImageEncoderOptions();
             ops.ModuleSize = 3;
-            Bitmap res = ie.EncodeImage(data, ops);
+            Bitmap res = ie.EncodeImage(data, ops);            
+            
+            string zFile = Path.Combine(CurrDir, "zint.exe");
+            if (codebar != "Data Matrix" && File.Exists(zFile))
+            {
+                codebar = codebar.Replace("-", "").Replace(" ", "").Trim().ToUpper();
+                string outFile = Path.Combine(CurrDir, "out2.png");
+                string cmdLine = $"-b {codebar} -o \"{outFile}\" -d \"{data}\"";
+                
+                if (File.Exists(outFile)) try { File.Delete(outFile); } catch { };
+                ProcessStartInfo psi = new ProcessStartInfo(zFile, cmdLine);
+                psi.WindowStyle = ProcessWindowStyle.Hidden;
+                psi.CreateNoWindow = true;
+                try
+                {
+                    Process proc = Process.Start(psi);
+                    proc.WaitForExit(5000);
+                    if (File.Exists(outFile))
+                    {
+                        res = (Bitmap)Bitmap.FromFile(outFile);
+                        res = ResizeImage(res, 116, 116);
+                    };
+                }
+                catch { };
+            };
+
             int reswi = res.Width;
             byte[] bytes = GetImageAsBytes(res);
 
@@ -604,7 +630,7 @@ namespace ExcelTemplatesLib
             wb.addPicture(_c = ic, _r = ir, ic, ir, bytes);
         }
 
-        private void AddBarCode(SmartXLS.WorkBook wb, string data, bool paste, ref int _r, ref int _c, out bool replaced)
+        private void AddBarCode(SmartXLS.WorkBook wb, string data, bool paste, string codebar, ref int _r, ref int _c, out bool replaced)
         {
             replaced = false;
             int ir = -1;
@@ -642,13 +668,97 @@ namespace ExcelTemplatesLib
             bc.Height = 60;
             bc.BarCode = data;
 
-            if (bc.IsValid)
+            Bitmap res = null;
+            string zFile = Path.Combine(CurrDir, "zint.exe");
+            if ((codebar != "Code 39" || (!bc.IsValid)) && File.Exists(zFile))
+            {
+                codebar = codebar.Replace("-", "").Replace(" ", "").Trim().ToUpper();
+                string outFile = Path.Combine(CurrDir, "out1.png");
+                string cmdLine = $"-b {codebar} -o \"{outFile}\" -d \"{data}\"";
+
+                if (File.Exists(outFile)) try { File.Delete(outFile); } catch { };
+                ProcessStartInfo psi = new ProcessStartInfo(zFile, cmdLine);
+                psi.WindowStyle = ProcessWindowStyle.Hidden;
+                psi.CreateNoWindow = true;
+                try
+                {
+                    Process proc = Process.Start(psi);
+                    proc.WaitForExit(5000);
+                    if (File.Exists(outFile))
+                    {
+                        res = (Bitmap)Bitmap.FromFile(outFile);
+                        res = CropImage(res, 960, 60);
+                    };
+                }
+                catch { };
+            };
+            if (res != null)
+            {
+                string tmpF = Path.GetTempFileName();
+                res.Save(tmpF);
+                res.Dispose();
+                wb.addPicture(_c = ic, _r = ir, ic, ir, tmpF);
+                File.Delete(tmpF);
+            }
+            else if (bc.IsValid)
             {
                 string tmpF = Path.GetTempFileName();
                 bc.SaveImage(tmpF);
                 wb.addPicture(_c = ic, _r = ir, ic, ir, tmpF);
                 File.Delete(tmpF);                
             };
+        }
+
+        public static Bitmap ResizeImage(Image image, int width, int height, bool keepAspectRation = true)
+        {
+            int sourceWidth = image.Width;
+            int sourceHeight = image.Height;
+            int sourceX = 0;
+            int sourceY = 0;
+            int destX = 0;
+            int destY = 0;
+
+            int destWidth = width;
+            int destHeight = height;
+
+            if (keepAspectRation)
+            {
+                float nPercent = 0;
+                float nPercentW = ((float)width / (float)sourceWidth);
+                float nPercentH = ((float)height / (float)sourceHeight);
+
+                if (nPercentH < nPercentW)
+                {
+                    nPercent = nPercentH;
+                    destX = System.Convert.ToInt16((width - (sourceWidth * nPercent)) / 2);
+                }
+                else
+                {
+                    nPercent = nPercentW;
+                    destY = System.Convert.ToInt16((height - (sourceHeight * nPercent)) / 2);
+                };
+
+                destWidth = (int)(sourceWidth * nPercent);
+                destHeight = (int)(sourceHeight * nPercent);
+            };
+
+            Bitmap bmPhoto = new Bitmap(width, height);//, PixelFormat.Format24bppRgb);
+            //bmPhoto.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+            Graphics g = Graphics.FromImage(bmPhoto);
+            //g.Clear(Color.White);
+            //g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            g.DrawImage(image, new Rectangle(destX, destY, destWidth, destHeight), new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight), GraphicsUnit.Pixel);
+            g.Dispose();
+            return bmPhoto;
+        }
+
+        public static Bitmap CropImage(Image image, int width, int height)
+        {            
+            Bitmap bmPhoto = new Bitmap(width, height);
+            Graphics g = Graphics.FromImage(bmPhoto);
+            g.DrawImage(image, width / 2 - image.Width / 2, height / 2 - image.Height / 2);
+            g.Dispose();
+            return bmPhoto;
         }
 
         private byte[] GetImageAsBytes(Bitmap bmp)

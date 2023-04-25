@@ -45,6 +45,8 @@ namespace ExcelTemplatesLib
             qrip.Checked = pluginConfig.QRIP;
             matrixBar.Checked = pluginConfig.MatrixBar;
             code39.Checked = pluginConfig.Code39Bar;
+            comboBox1.Text = pluginConfig.MatrixCode;
+            comboBox2.Text = pluginConfig.SingleCode;
         }
 
         private void SaveCfg()
@@ -116,6 +118,18 @@ namespace ExcelTemplatesLib
         private void code39_CheckedChanged(object sender, EventArgs e)
         {
             pluginConfig.Code39Bar = code39.Checked;
+            SaveCfg();
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            pluginConfig.MatrixCode = comboBox1.Text;
+            SaveCfg();
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            pluginConfig.SingleCode = comboBox2.Text;
             SaveCfg();
         }
     }
